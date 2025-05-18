@@ -1,0 +1,165 @@
+{% extends "core/base.html" %}
+{% block content %}
+<style>
+  /* Animation for fading in content */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .content-wrapper {
+    animation: fadeInUp 0.6s ease forwards;
+  }
+
+  h2 {
+    font-family: 'Merriweather', serif;
+    font-weight: 700;
+    color: var(--green-dark);
+    margin-bottom: 1rem;
+  }
+
+  ul.link-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  ul.link-list li a {
+    background-color: var(--green-mid);
+    color: white;
+    padding: 0.6rem 1.3rem;
+    border-radius: 30px;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 4px 8px rgba(94, 163, 58, 0.3);
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    display: inline-block;
+  }
+
+  ul.link-list li a:hover,
+  ul.link-list li a:focus {
+    background-color: var(--green-light);
+    box-shadow: 0 6px 16px rgba(167, 209, 41, 0.6);
+    transform: scale(1.05);
+    outline: none;
+  }
+
+  .event-card {
+    background: var(--glass-bg);
+    backdrop-filter: saturate(180%) blur(12px);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    box-shadow: 0 8px 16px var(--shadow-color);
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 1rem;
+    transition: box-shadow 0.3s ease, transform 0.25s ease;
+  }
+
+  .event-card:hover,
+  .event-card:focus-within {
+    box-shadow: 0 12px 24px rgba(167, 209, 41, 0.6);
+    transform: translateY(-5px);
+    outline: none;
+  }
+
+  .event-card p {
+    margin: 0.3rem 0;
+    color: var(--green-dark);
+  }
+
+  .join-button {
+    background-color: var(--green-mid);
+    color: white;
+    padding: 0.5rem 1.2rem;
+    border-radius: 30px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(94, 163, 58, 0.3);
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    margin-top: 0.8rem;
+  }
+
+  .join-button:hover,
+  .join-button:focus {
+    background-color: var(--green-light);
+    box-shadow: 0 6px 16px rgba(167, 209, 41, 0.6);
+    transform: scale(1.05);
+    outline: none;
+  }
+
+  h3 {
+    color: var(--green-mid);
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+  }
+
+  ul.schedule-list {
+    list-style: none;
+    padding-left: 1rem;
+    color: var(--green-dark);
+  }
+
+  ul.schedule-list li {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+
+  p.no-events {
+    font-style: italic;
+    color: var(--green-dark);
+  }
+</style>
+
+<div class="content-wrapper">
+  <h2>Welcome, {{ user.username }}</h2>
+
+  <ul class="link-list">
+    <li><a href="{% url 'events' %}">View Events</a></li>
+    <li><a href="{% url 'upload_report' %}">Upload Reports</a></li>
+  </ul>
+
+  <h3>Upcoming Clean-up Events:</h3>
+  {% if upcoming_events %}
+    {% for event in upcoming_events %}
+      <div class="event-card" tabindex="0">
+        <p><strong>Event:</strong> {{ event.title }}</p>
+        <p><strong>Date:</strong> {{ event.date|date:"M d, Y" }}</p>
+        <p><strong>Location:</strong> {{ event.location }}</p>
+        <form method="post" action="{% url 'events' %}">
+          {% csrf_token %}
+          <input type="hidden" name="event_id" value="{{ event.id }}">
+          <button type="submit" class="join-button">Join as Volunteer</button>
+        </form>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="no-events">No upcoming events.</p>
+  {% endif %}
+
+  <h3>Garbage Collection Schedule this Week:</h3>
+  {% if weekly_schedules %}
+    <ul class="schedule-list">
+      {% for schedule in weekly_schedules %}
+        <li>
+          {{ schedule.date|date:"M d, Y" }} — 
+          {{ schedule.waste_type }} — 
+          {{ schedule.start_time|time:"g:i A" }} to {{ schedule.end_time|time:"g:i A" }}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="no-events">No garbage collection scheduled.</p>
+  {% endif %}
+</div>
+{% endblock %}

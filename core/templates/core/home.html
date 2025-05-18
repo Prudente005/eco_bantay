@@ -1,0 +1,11 @@
+{% extends "core/base.html" %}
+
+{% block title %}Home - Eco Bantay{% endblock %}
+
+{% block content %}
+<section class="welcome-section">
+  <h1>Welcome to EcoBantay</h1>
+  <p>Join a dedicated community committed to environmental preservation and sustainable action.</p>
+  <p>Get involved today — <a href="{% url 'login' %}">Log in</a> or <a href="{% url 'register' %}">Create an Account</a> to start making a difference.</p>
+</section>
+{% endblock %}
